@@ -15,8 +15,6 @@
 int	open_files(char **argv, int *infile, int *outfile)
 {
 	*infile = open(argv[1], O_RDONLY);
-	if (*infile == -1)
-		exit_error("Pipex: Error opening infile");
 	if (!infile)
 		*infile = open("/dev/null", O_RDONLY);
 	*outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
