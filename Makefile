@@ -17,7 +17,7 @@ FLAGS = -Werror -Wall -Wextra -fsanitize=address
 NAME = pipex
 RM = rm -rf
 
-SRC = pipex.c	\
+SRC = main.c	\
 		utils.c
 
 OBJ = $(SRC:.c=.o)

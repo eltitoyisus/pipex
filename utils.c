@@ -18,6 +18,8 @@ char	*find_path(char *cmd, char **envp)
 	char	*full_path;
 	int		i;
 
+	if (!envp || !*envp)
+		return (cmd);
 	i = 0;
 	while (envp[i] && ft_strnstr(envp[i], "PATH=", 5) == 0)
 		i++;
