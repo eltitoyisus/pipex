@@ -1,27 +1,45 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: jramos-a <jramos-a@student.42madrid.com    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/01/27 09:37:18 by jramos-a          #+#    #+#              #
+#    Updated: 2025/01/27 09:37:18 by jramos-a         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-PRINTF = make /printf/makefile
 
-name: pipex
 
-SRC = pipex.c \
-	  pipex_utils.c \
-	  pipex_utils2.c \
-	  pipex_utils3.c
+CC = cc
+FLAGS = -Werror -Wall -Wextra -fsanitize=address
+NAME = pipex
+RM = rm -rf
+
+SRC = pipex.c	\
+		utils.c
 
 OBJ = $(SRC:.c=.o)
 
-all: $(name)
+all: $(NAME)
 
-$(name): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(name)
-	$(PRINTF)
+libft/libft.a:
+	@$(MAKE) -C libft
 
-clean: rm -f $(OBJ)
+$(NAME): $(OBJ) libft/libft.a
+	@$(CC) $(FLAGS) $(OBJ) libft/libft.a -o $(NAME)
 
-fclean: clean
-	rm -f $(name)
+%.o: %.c
+	$(CC) $(FLAGS) -c $< -o $@
+
+clean: 
+	@$(RM) $(OBJ)
+	@$(MAKE) clean -C libft
+
+fclean: 
+	@$(RM) $(OBJ) $(NAME)
+	@$(MAKE) fclean -C libft
 
 re: fclean all
 
