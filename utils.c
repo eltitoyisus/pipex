@@ -14,51 +14,51 @@
 
 char	*find_path(char *cmd, char **envp)
 {
-	char	*path;
+	char	**paths;
+	char	*full_path;
 	int		i;
 
 	i = 0;
-	// manejar no enviroment
-	while (ft_strnstr(envp[i], "PATH=", 5) == 0)
-	{
-		if (i == 0)
-			handle_no_path();
-	}
-	i++;
-}
-
-void handle_no_path(char **envp)
-{
-	int i;
-
+	while (envp[i] && ft_strnstr(envp[i], "PATH=", 5) == 0)
+		i++;
+	if (!envp[i])
+		handle_no_path();
+	paths = ft_split(envp[i] + 5, ':');
 	i = 0;
-	if (ft_strnstr(envp[i], "PATH=", 5) == 0)
+	while (paths[i])
 	{
-		handle_no_env(envp);
-		perror("Pipex: command not found: Path not set");
-		exit(0);
+		full_path = ft_strjoin(paths[i], "/");
+		full_path = ft_strjoin(full_path, cmd);
+		if (access(full_path, X_OK) == 0)
+			return (full_path);
+		free(full_path);
+		i++;
 	}
-	i++;
+	return (NULL);
 }
-// gestionar ruta absoluta
-// manejar que el input contenga una barra
-void handle_no_env(char **envp)
+
+void	handle_no_path(void)
 {
-	if (envp == NULL)
+	exit_error("Pipex: command not found: Path not set");
+	exit(0);
+}
+
+void	handle_no_env(char **envp)
+{
+	if (envp == NULL || *envp == NULL)
 	{
-		perror("Pipex: command not found: Environment not set");
+		exit_error("Pipex: command not found: Environment not set");
 		exit(0);
 	}
 }
 
-void execute_command(char *cmd, char **envp)
+void	execute_command(char *cmd, char **envp)
 {
 	char	**string_cmd;
 	char	*path;
 
 	string_cmd = ft_split(cmd, ' ');
 	path = find_path(string_cmd[0], envp);
-	//gestionar no path
 	if (execve(path, string_cmd, envp) == -1)
 	{
 		ft_putstr_fd("Pipex: command not found: ", 2);
@@ -67,7 +67,7 @@ void execute_command(char *cmd, char **envp)
 	}
 }
 
-void exit_error(char *msg)
+void	exit_error(char *msg)
 {
 	perror(msg);
 	exit(EXIT_FAILURE);

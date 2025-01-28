@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #ifndef PIPEX_H
 # define PIPEX_H
 
@@ -22,11 +21,14 @@
 # include <fcntl.h>
 # include "libft/libft.h"
 
-int parent_process(int *fd, char **argv, char **envp);
-int child_process(int *fd, char **argv, char **envp);
-int parse_args(int argc, char **argv);
-void exit_error(char *msg);
-void execute(char *cmd, char **envp);
-char *find_path(char *cmd, char **envp);
+void	exit_error(char *msg);
+char	*find_path(char *cmd, char **envp);
+void	handle_no_path(void);
+void	handle_no_env(char **envp);
+void	handle_errors(char **envp);
+void	execute_command(char *cmd, char **envp);
+int		parent_process(int *fd, char **argv, char **envp, int outfile);
+int		child_process(int *fd, char **argv, char **envp, int infile);
+int		open_files(char **argv, int *infile, int *outfile);
 
 #endif
