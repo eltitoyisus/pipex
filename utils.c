@@ -56,15 +56,15 @@ void	handle_no_env(char **envp)
 
 void	execute_command(char *cmd, char **envp)
 {
-	char	**string_cmd;
+	char	**split_cmd;
 	char	*path;
 
-	string_cmd = ft_split(cmd, ' ');
-	path = find_path(string_cmd[0], envp);
-	if (execve(path, string_cmd, envp) == -1)
+	split_cmd = ft_split(cmd, ' ');
+	path = find_path(split_cmd[0], envp);
+	if (execve(path, split_cmd, envp) == -1)
 	{
 		ft_putstr_fd("Pipex: command not found: ", 2);
-		ft_putendl_fd(string_cmd[0], 2);
+		ft_putendl_fd(split_cmd[0], 2);
 		exit(0);
 	}
 }
