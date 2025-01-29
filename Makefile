@@ -23,21 +23,21 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 libft/libft.a:
-	@$(MAKE) -C libft
+	@$(MAKE) -C LIB
 
-$(NAME): $(OBJ) libft/libft.a
-	@$(CC) $(FLAGS) $(OBJ) libft/libft.a -o $(NAME)
+$(NAME): $(OBJ) LIB/libft.a
+	@$(CC) $(FLAGS) $(OBJ) LIB/libft.a -o $(NAME)
 
 %.o: %.c
 	$(CC) $(FLAGS) -c $< -o $@
 
 clean: 
 	@$(RM) $(OBJ)
-	@$(MAKE) clean -C libft
+	@$(MAKE) clean -C LIB
 
 fclean: 
 	@$(RM) $(OBJ) $(NAME)
-	@$(MAKE) fclean -C libft
+	@$(MAKE) fclean -C LIB
 
 re: fclean all
 
