@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jramos-a <jramos-a@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: jramos-a <jramos-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 08:37:23 by jramos-a          #+#    #+#             */
-/*   Updated: 2025/01/28 08:37:23 by jramos-a         ###   ########.fr       */
+/*   Updated: 2025/01/29 13:20:26 by jramos-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ char	*find_path(char *cmd, char **envp)
 	char	**paths;
 	char	*full_path;
 	int		i;
+	char	*temp;
 
 	if (!envp || !*envp)
 		return (cmd);
@@ -29,8 +30,9 @@ char	*find_path(char *cmd, char **envp)
 	i = 0;
 	while (paths[i])
 	{
-		full_path = ft_strjoin(paths[i], "/");
-		full_path = ft_strjoin(full_path, cmd);
+		temp = ft_strjoin(paths[i], "/");
+		full_path = ft_strjoin(temp, cmd);
+		free (temp);
 		if (access(full_path, X_OK) == 0)
 			return (full_path);
 		free(full_path);

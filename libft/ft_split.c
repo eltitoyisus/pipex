@@ -6,7 +6,7 @@
 /*   By: jramos-a <jramos-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/19 10:55:24 by marvin            #+#    #+#             */
-/*   Updated: 2024/10/23 09:20:33 by jramos-a         ###   ########.fr       */
+/*   Updated: 2025/01/29 13:23:19 by jramos-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,10 +87,12 @@ static char	**ft_split_word(char *s, char c)
 	while (s[j])
 	{
 		arr[i] = ft_read_word(s, c, &j);
+		if (!arr[i])
+			return (ft_free(arr), NULL);
 		if (arr[i])
 			i++;
-		else if (s[j])
-			return (ft_free(arr), NULL);
+		// else if (s[j])
+		// 	return (ft_free(arr), NULL);
 	}
 	arr[i] = NULL;
 	return (arr);
