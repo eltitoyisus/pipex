@@ -5,15 +5,13 @@
 #                                                     +:+ +:+         +:+      #
 #    By: jramos-a <jramos-a@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/01/27 09:37:18 by jramos-a          #+#    #+#              #
-#    Updated: 2025/01/27 09:37:18 by jramos-a         ###   ########.fr        #
+#    Created: 2025/01/28 22:32:48 by jramos-a          #+#    #+#              #
+#    Updated: 2025/01/28 22:32:48 by jramos-a         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-
-
 CC = cc
-FLAGS = -Werror -Wall -Wextra -fsanitize=address
+FLAGS = -Werror -Wall -Wextra
 NAME = pipex
 RM = rm -rf
 
