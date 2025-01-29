@@ -19,7 +19,7 @@
 # include <stdio.h>
 # include <sys/wait.h>
 # include <fcntl.h>
-# include "libft/libft.h"
+# include "LIB/libft.h"
 
 void	exit_error(char *msg);
 char	*find_path(char *cmd, char **envp);
