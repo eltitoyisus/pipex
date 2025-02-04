@@ -33,9 +33,13 @@ char	*find_path(char *cmd, char **envp)
 		full_path = ft_strjoin(temp, cmd);
 		free(temp);
 		if (!access(full_path, X_OK))
+		{
+			free_array(paths);
 			return (full_path);
+		}
 		free(full_path);
 	}
+	free_array(paths);
 	return (NULL);
 }
 
@@ -51,6 +55,7 @@ void	free_array(char **arr)
 		free(arr[i]);
 		i++;
 	}
+	free(arr);
 }
 
 void	handle_no_path(void)
