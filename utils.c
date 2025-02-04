@@ -17,8 +17,8 @@ char	**get_paths(char **envp)
 	int		i;
 	char	**paths;
 
-	paths = ft_split(envp[i] + 5, ':');
 	i = 0;
+	paths = ft_split(envp[i] + 5, ':');
 	if (!envp || !*envp)
 		return (NULL);
 	while (envp[i] && !ft_strnstr(envp[i], "PATH=", 5))
