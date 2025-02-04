@@ -21,24 +21,36 @@ char	*find_path(char *cmd, char **envp)
 
 	if (!envp || !*envp)
 		return (cmd);
-	i = 0;
-	while (envp[i] && ft_strnstr(envp[i], "PATH=", 5) == 0)
-		i++;
+	for (i = 0; envp[i] && !ft_strnstr(envp[i], "PATH=", 5); i++);
 	if (!envp[i])
 		handle_no_path();
-	paths = ft_split(envp[i] + 5, ':');
-	i = 0;
-	while (paths[i])
+	if (!(paths = ft_split(envp[i] + 5, ':')))
+		return (NULL);
+	i = -1;
+	while (paths[++i])
 	{
 		temp = ft_strjoin(paths[i], "/");
 		full_path = ft_strjoin(temp, cmd);
-		free (temp);
-		if (access(full_path, X_OK) == 0)
+		free(temp);
+		if (!access(full_path, X_OK))
 			return (full_path);
 		free(full_path);
-		i++;
 	}
 	return (NULL);
+}
+
+void	free_array(char **arr)
+{
+	int	i;
+
+	if (!arr)
+		return;
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
 }
 
 void	handle_no_path(void)
@@ -62,13 +74,26 @@ void	execute_command(char *cmd, char **envp)
 	char	*path;
 
 	split_cmd = ft_split(cmd, ' ');
+	if (!split_cmd || !split_cmd[0])
+	{
+		ft_putstr_fd("Pipex: command not found: ", 2);
+		ft_putendl_fd(cmd, 2);
+		free_array(split_cmd);
+		exit(0);
+	}
 	path = find_path(split_cmd[0], envp);
-	if (execve(path, split_cmd, envp) == -1)
+	if (!path)
 	{
 		ft_putstr_fd("Pipex: command not found: ", 2);
 		ft_putendl_fd(split_cmd[0], 2);
+		free_array(split_cmd);
 		exit(0);
 	}
+	execve(path, split_cmd, envp);
+	perror("execve failed");
+	free(path);
+	free_array(split_cmd);
+	exit(0);
 }
 
 void	exit_error(char *msg)

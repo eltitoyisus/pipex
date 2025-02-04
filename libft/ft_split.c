@@ -14,85 +14,72 @@
 
 static int	ft_counter(const char *s, char c)
 {
-	int		word;
+	int	word;
+	int	in_word;
 
 	word = 0;
-	if (!s)
-		return (0);
+	in_word = 0;
 	while (*s)
 	{
-		while (*s == c)
-			s++;
-		if (*s)
+		if (*s != c && !in_word)
 		{
 			word++;
-			while (*s && *s != c)
-				s++;
+			in_word = 1;
 		}
+		else if (*s == c)
+			in_word = 0;
+		s++;
 	}
 	return (word);
 }
 
-static void	ft_free(char **a)
-{
-	int	i;
-
-	i = 0;
-	if (!a)
-		return ;
-	while (a[i])
-	{
-		free(a[i]);
-		i++;
-	}
-	free(a);
-}
-
-static char	*ft_read_word(char *s, char c, int *index)
+static char	*ft_read_word(const char *s, char c, int *index)
 {
 	int		start;
-	int		end;
-	char	*word;
 	int		len;
+	char	*word;
 
+	// Skip over any delimiters
 	while (s[*index] == c)
 		(*index)++;
 	start = *index;
+	// Find the end of the word
 	while (s[*index] && s[*index] != c)
 		(*index)++;
-	end = *index;
-	len = end - start;
-	if (start < end)
-	{
-		word = (char *)malloc((len + 1) * sizeof(char));
-		if (!word)
-			return (NULL);
-		ft_strlcpy(word, &s[start], len + 1);
-		return (word);
-	}
-	return (NULL);
+	len = *index - start;
+	// Allocate memory for the word
+	word = (char *)malloc((len + 1) * sizeof(char));
+	if (!word)
+		return (NULL);
+	// Copy the word to the newly allocated space
+	ft_strlcpy(word, &s[start], len + 1);
+	return (word);
 }
 
-static char	**ft_split_word(char *s, char c)
+static char	**ft_split_word(const char *s, char c)
 {
 	char	**arr;
+	int		words;
 	int		i;
-	int		j;
+	int		index;
 
-	i = 0;
-	j = 0;
-	arr = malloc((ft_counter(s, c) + 1) * sizeof(char *));
+	words = ft_counter(s, c);
+	arr = (char **)malloc((words + 1) * sizeof(char *));
 	if (!arr)
 		return (NULL);
-	while (s[j])
+	i = 0;
+	index = 0;
+	while (i < words)
 	{
-		arr[i] = ft_read_word(s, c, &j);
+		arr[i] = ft_read_word(s, c, &index);
 		if (!arr[i])
-			return (ft_free(arr), NULL);
-		if (arr[i])
-			i++;
-		// else if (s[j])
-		// 	return (ft_free(arr), NULL);
+		{
+			while (i > 0)
+				free(arr[--i]);
+			free(arr);
+			return (NULL);
+		}
+		i++;
 	}
 	arr[i] = NULL;
 	return (arr);
@@ -102,5 +89,5 @@ char	**ft_split(char const *s, char c)
 {
 	if (!s)
 		return (NULL);
-	return (ft_split_word((char *)s, c));
+	return (ft_split_word(s, c));
 }

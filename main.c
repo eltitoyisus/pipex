@@ -30,6 +30,7 @@ int	parent_process(int *fd, char **argv, char **envp, int outfile)
 {
 	dup2(fd[0], 0);
 	close(fd[1]);
+	close(fd[0]);
 	dup2(outfile, 1);
 	close(outfile);
 	execute_command(argv[3], envp);
@@ -42,6 +43,7 @@ int	child_process(int *fd, char **argv, char **envp, int infile)
 	close(infile);
 	dup2(fd[1], 1);
 	close(fd[0]);
+	close(fd[1]);
 	execute_command(argv[2], envp);
 	return (0);
 }
@@ -58,6 +60,7 @@ int	main(int argc, char **argv, char **envp)
 	pid_t	pid;
 	int		infile;
 	int		outfile;
+	pid_t	pid2;
 
 	if (argc != 5)
 		exit_error("Pipex: infile command command outfile");
@@ -65,14 +68,16 @@ int	main(int argc, char **argv, char **envp)
 		exit_error("Pipex: Pipe error");
 	open_files(argv, &infile, &outfile);
 	pid = fork();
-	if (pid == -1)
+	pid2 = fork();
+	if (pid == -1 || pid2 == -1)
 		exit_error("Pipex: Fork error");
 	if (pid == 0)
 		child_process(fd, argv, envp, infile);
-	else
-	{
-		waitpid(pid, NULL, 0);
+	if (pid2 == 0)
 		parent_process(fd, argv, envp, outfile);
-	}
+	close(fd[0]);
+	close(fd[1]);
+	waitpid(pid2, NULL, 0);
+	waitpid(pid, NULL, 0);
 	return (0);
 }
