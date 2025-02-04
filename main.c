@@ -99,7 +99,7 @@ int	main(int argc, char **argv, char **envp)
 		parent_process(fd, argv, envp, outfile);
 	close(fd[0]);
 	close(fd[1]);
-	waitpid(pid2, NULL, 0);
 	waitpid(pid, NULL, 0);
+	waitpid(pid2, NULL, 0);
 	return (0);
 }

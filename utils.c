@@ -12,22 +12,21 @@
 
 #include "pipex.h"
 
-char	**get_paths(char **envp)
+char	*get_paths(char **envp)
 {
-	int		i;
-	char	**paths;
+	int	i;
 
-	i = 0;
-	paths = ft_split(envp[i] + 5, ':');
 	if (!envp || !*envp)
-		return (NULL);
+		handle_no_env(envp);
+	i = 0;
 	while (envp[i] && !ft_strnstr(envp[i], "PATH=", 5))
 		i++;
 	if (!envp[i])
 		handle_no_env(envp);
-	if (!paths)
+	if (envp[i])
+		return (envp[i] + 5);
+	else
 		return (NULL);
-	return (paths);
 }
 
 char	*find_path(char *cmd, char **envp)
@@ -37,11 +36,11 @@ char	*find_path(char *cmd, char **envp)
 	int		i;
 	char	*temp;
 
-	paths = get_paths(envp);
+	paths = ft_split(get_paths(envp), ':');
 	if (!paths)
-		return (cmd);
-	i = -1;
-	while (paths[++i])
+		return (NULL);
+	i = 0;
+	while (paths[i])
 	{
 		temp = ft_strjoin(paths[i], "/");
 		full_path = ft_strjoin(temp, cmd);
@@ -52,6 +51,7 @@ char	*find_path(char *cmd, char **envp)
 			return (full_path);
 		}
 		free(full_path);
+		i++;
 	}
 	free_array(paths);
 	return (NULL);
