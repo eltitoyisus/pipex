@@ -29,6 +29,8 @@ void	handle_errors(char **envp);
 void	execute_command(char *cmd, char **envp);
 int		parent_process(int *fd, char **argv, char **envp, int outfile);
 int		child_process(int *fd, char **argv, char **envp, int infile);
+char	**get_paths(char **envp);
+void	free_array(char **arr);
 int		open_files(char **argv, int *infile, int *outfile);
 
 #endif

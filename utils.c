@@ -12,6 +12,24 @@
 
 #include "pipex.h"
 
+char	**get_paths(char **envp)
+{
+	int		i;
+	char	**paths;
+
+	paths = ft_split(envp[i] + 5, ':');
+	i = 0;
+	if (!envp || !*envp)
+		return (NULL);
+	while (envp[i] && !ft_strnstr(envp[i], "PATH=", 5))
+		i++;
+	if (!envp[i])
+		handle_no_env(envp);
+	if (!paths)
+		return (NULL);
+	return (paths);
+}
+
 char	*find_path(char *cmd, char **envp)
 {
 	char	**paths;
@@ -19,13 +37,9 @@ char	*find_path(char *cmd, char **envp)
 	int		i;
 	char	*temp;
 
-	if (!envp || !*envp)
+	paths = get_paths(envp);
+	if (!paths)
 		return (cmd);
-	for (i = 0; envp[i] && !ft_strnstr(envp[i], "PATH=", 5); i++);
-	if (!envp[i])
-		handle_no_path();
-	if (!(paths = ft_split(envp[i] + 5, ':')))
-		return (NULL);
 	i = -1;
 	while (paths[++i])
 	{
@@ -48,7 +62,7 @@ void	free_array(char **arr)
 	int	i;
 
 	if (!arr)
-		return;
+		return ;
 	i = 0;
 	while (arr[i])
 	{
@@ -58,12 +72,6 @@ void	free_array(char **arr)
 	free(arr);
 }
 
-void	handle_no_path(void)
-{
-	exit_error("Pipex: command not found: Path not set");
-	exit(0);
-}
-
 void	handle_no_env(char **envp)
 {
 	if (envp == NULL || *envp == NULL)
@@ -71,34 +79,6 @@ void	handle_no_env(char **envp)
 		exit_error("Pipex: command not found: Environment not set");
 		exit(0);
 	}
-}
-
-void	execute_command(char *cmd, char **envp)
-{
-	char	**split_cmd;
-	char	*path;
-
-	split_cmd = ft_split(cmd, ' ');
-	if (!split_cmd || !split_cmd[0])
-	{
-		ft_putstr_fd("Pipex: command not found: ", 2);
-		ft_putendl_fd(cmd, 2);
-		free_array(split_cmd);
-		exit(0);
-	}
-	path = find_path(split_cmd[0], envp);
-	if (!path)
-	{
-		ft_putstr_fd("Pipex: command not found: ", 2);
-		ft_putendl_fd(split_cmd[0], 2);
-		free_array(split_cmd);
-		exit(0);
-	}
-	execve(path, split_cmd, envp);
-	perror("execve failed");
-	free(path);
-	free_array(split_cmd);
-	exit(0);
 }
 
 void	exit_error(char *msg)

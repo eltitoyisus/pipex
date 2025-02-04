@@ -48,10 +48,32 @@ int	child_process(int *fd, char **argv, char **envp, int infile)
 	return (0);
 }
 
-void	handle_errors(char **envp)
+void	execute_command(char *cmd, char **envp)
 {
-	handle_no_env(envp);
-	handle_no_path();
+	char	**split_cmd;
+	char	*path;
+
+	split_cmd = ft_split(cmd, ' ');
+	if (!split_cmd || !split_cmd[0])
+	{
+		ft_putstr_fd("Pipex: command not found: ", 2);
+		ft_putendl_fd(cmd, 2);
+		free_array(split_cmd);
+		exit(0);
+	}
+	path = find_path(split_cmd[0], envp);
+	if (!path)
+	{
+		ft_putstr_fd("Pipex: command not found: ", 2);
+		ft_putendl_fd(split_cmd[0], 2);
+		free_array(split_cmd);
+		exit(0);
+	}
+	execve(path, split_cmd, envp);
+	perror("execve failed");
+	free(path);
+	free_array(split_cmd);
+	exit(0);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -63,7 +85,7 @@ int	main(int argc, char **argv, char **envp)
 	pid_t	pid2;
 
 	if (argc != 5)
-		exit_error("Pipex: infile command command outfile");
+		perror("Pipex: infile command command outfile");
 	if (pipe(fd) == -1)
 		exit_error("Pipex: Pipe error");
 	open_files(argv, &infile, &outfile);

@@ -39,19 +39,15 @@ static char	*ft_read_word(const char *s, char c, int *index)
 	int		len;
 	char	*word;
 
-	// Skip over any delimiters
 	while (s[*index] == c)
 		(*index)++;
 	start = *index;
-	// Find the end of the word
 	while (s[*index] && s[*index] != c)
 		(*index)++;
 	len = *index - start;
-	// Allocate memory for the word
 	word = (char *)malloc((len + 1) * sizeof(char));
 	if (!word)
 		return (NULL);
-	// Copy the word to the newly allocated space
 	ft_strlcpy(word, &s[start], len + 1);
 	return (word);
 }
