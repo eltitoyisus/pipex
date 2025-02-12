@@ -1,0 +1,9 @@
+Makefile
+libft
+main.c
+main.o
+outfile.txt
+pipex
+pipex.h
+utils.c
+utils.o

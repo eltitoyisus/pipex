@@ -88,16 +88,23 @@ int	main(int argc, char **argv, char **envp)
 		exit_error("Pipex: Pipe error");
 	open_files(argv, &infile, &outfile);
 	pid = fork();
-	pid2 = fork();
-	if (pid == -1 || pid2 == -1)
+	if (pid == -1)
 		exit_error("Pipex: Fork error");
 	if (pid == 0)
 		child_process(fd, argv, envp, infile);
-	if (pid2 == 0)
+	else
+	pid2 = fork();
+	if (pid2 == -1)	
+	exit_error("Pipex: Fork error");
+	else if (pid2 == 0)
 		parent_process(fd, argv, envp, outfile);
 	close(fd[0]);
 	close(fd[1]);
 	waitpid(pid, NULL, 0);
 	waitpid(pid2, NULL, 0);
+	if (infile)
+		close(infile);
+	if (outfile)
+		close(outfile);
 	return (0);
 }
