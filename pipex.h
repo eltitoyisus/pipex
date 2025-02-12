@@ -21,14 +21,14 @@
 # include <fcntl.h>
 # include "libft/libft.h"
 
-void	exit_error(char *msg);
 char	*find_path(char *cmd, char **envp);
 void	handle_no_env(char **envp);
 void	execute_command(char *cmd, char **envp);
-int		parent_process(int *fd, char **argv, char **envp, int outfile);
-int		child_process(int *fd, char **argv, char **envp, int infile);
 void	free_array(char **arr);
 int		open_files(char **argv, int *infile, int *outfile);
 char	*get_paths(char **envp);
+void	child_process(int *fd, char **argv, char **envp);
+void	parent_process(int *fd, char **argv, char **envp);
+void	create_processes(int *fd, char **argv, char **envp);
 
 #endif

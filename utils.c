@@ -76,13 +76,33 @@ void	handle_no_env(char **envp)
 {
 	if (envp == NULL || *envp == NULL)
 	{
-		exit_error("Pipex: command not found: Environment not set");
+		perror("Pipex: command not found: Environment not set");
 		exit(0);
 	}
 }
 
-void	exit_error(char *msg)
+void	execute_command(char *cmd, char **envp)
 {
-	perror(msg);
-	exit(EXIT_FAILURE);
+	char	**split_cmd;
+	char	*path;
+
+	split_cmd = ft_split(cmd, ' ');
+	if (!split_cmd || !split_cmd[0])
+	{
+		perror("Pipex: command not found: ");
+		free_array(split_cmd);
+		exit(0);
+	}
+	path = find_path(split_cmd[0], envp);
+	if (!path)
+	{
+		perror("Pipex: command not found: ");
+		free_array(split_cmd);
+		exit(0);
+	}
+	execve(path, split_cmd, envp);
+	perror("execve failed");
+	free(path);
+	free_array(split_cmd);
+	exit(0);
 }

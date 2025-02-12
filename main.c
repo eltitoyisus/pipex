@@ -22,89 +22,72 @@ int	open_files(char **argv, int *infile, int *outfile)
 	}
 	*outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (*outfile == -1)
-		exit_error("Pipex: Error opening outfile");
+		perror("Pipex: Error opening outfile");
 	return (0);
 }
 
-int	parent_process(int *fd, char **argv, char **envp, int outfile)
+void	child_process(int *fd, char **argv, char **envp)
 {
-	dup2(fd[0], 0);
-	close(fd[1]);
-	close(fd[0]);
-	dup2(outfile, 1);
-	close(outfile);
-	execute_command(argv[3], envp);
-	return (0);
-}
+	int	infile;
 
-int	child_process(int *fd, char **argv, char **envp, int infile)
-{
+	infile = open(argv[1], O_RDONLY);
+	if (infile == -1)
+	{
+		perror("Pipex: Error opening infile");
+		infile = open("/dev/null", O_RDONLY);
+	}
 	dup2(infile, 0);
 	close(infile);
 	dup2(fd[1], 1);
 	close(fd[0]);
 	close(fd[1]);
 	execute_command(argv[2], envp);
-	return (0);
 }
 
-void	execute_command(char *cmd, char **envp)
+void	parent_process(int *fd, char **argv, char **envp)
 {
-	char	**split_cmd;
-	char	*path;
+	int	outfile;
 
-	split_cmd = ft_split(cmd, ' ');
-	if (!split_cmd || !split_cmd[0])
-	{
-		perror("Pipex: command not found: ");
-		free_array(split_cmd);
-		exit(0);
-	}
-	path = find_path(split_cmd[0], envp);
-	if (!path)
-	{
-		perror("Pipex: command not found: ");
-		free_array(split_cmd);
-		exit(0);
-	}
-	execve(path, split_cmd, envp);
-	perror("execve failed");
-	free(path);
-	free_array(split_cmd);
-	exit(0);
+	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (outfile == -1)
+		perror("Pipex: Error opening outfile");
+	dup2(fd[0], 0);
+	close(fd[1]);
+	close(fd[0]);
+	dup2(outfile, 1);
+	close(outfile);
+	execute_command(argv[3], envp);
+}
+
+void	create_processes(int *fd, char **argv, char **envp)
+{
+	pid_t	pid1;
+	pid_t	pid2;
+
+	pid1 = fork();
+	if (pid1 == -1)
+		perror("Pipex: Fork error");
+	if (pid1 == 0)
+		child_process(fd, argv, envp);
+	pid2 = fork();
+	if (pid2 == -1)
+		perror("Pipex: Fork error");
+	if (pid2 == 0)
+		parent_process(fd, argv, envp);
+	close(fd[0]);
+	close(fd[1]);
+	waitpid(pid1, NULL, 0);
+	waitpid(pid2, NULL, 0);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	int		fd[2];
-	pid_t	pid;
-	int		infile;
-	int		outfile;
-	pid_t	pid2;
 
 	if (argc != 5)
 		perror("Pipex: infile command command outfile");
 	if (pipe(fd) == -1)
-		exit_error("Pipex: Pipe error");
-	open_files(argv, &infile, &outfile);
-	pid = fork();
-	if (pid == -1)
-		exit_error("Pipex: Fork error");
-	if (pid == 0)
-		child_process(fd, argv, envp, infile);
-	else
-	pid2 = fork();
-	if (pid2 == -1)	
-	exit_error("Pipex: Fork error");
-	else if (pid2 == 0)
-		parent_process(fd, argv, envp, outfile);
-	close(fd[0]);
-	close(fd[1]);
-	waitpid(pid, NULL, 0);
-	waitpid(pid2, NULL, 0);
-	if (infile)
-		close(infile);
-	if (outfile)
-		close(outfile);
+		perror("Pipex: Pipe error");
+	create_processes(fd, argv, envp);
 	return (0);
 }
