@@ -56,16 +56,14 @@ void	execute_command(char *cmd, char **envp)
 	split_cmd = ft_split(cmd, ' ');
 	if (!split_cmd || !split_cmd[0])
 	{
-		ft_putstr_fd("Pipex: command not found: ", 2);
-		ft_putendl_fd(cmd, 2);
+		perror("Pipex: command not found: ");
 		free_array(split_cmd);
 		exit(0);
 	}
 	path = find_path(split_cmd[0], envp);
 	if (!path)
 	{
-		ft_putstr_fd("Pipex: command not found: ", 2);
-		ft_putendl_fd(split_cmd[0], 2);
+		perror("Pipex: command not found: ");
 		free_array(split_cmd);
 		exit(0);
 	}
