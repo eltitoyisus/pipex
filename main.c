@@ -6,25 +6,11 @@
 /*   By: jramos-a <jramos-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 08:37:17 by jramos-a          #+#    #+#             */
-/*   Updated: 2025/01/29 12:45:07 by jramos-a         ###   ########.fr       */
+/*   Updated: 2025/02/17 11:14:29 by jramos-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-int	open_files(char **argv, int *infile, int *outfile)
-{
-	*infile = open(argv[1], O_RDONLY);
-	if (*infile == -1)
-	{
-		perror("Pipex: Error opening infile");
-		*infile = open("/dev/null", O_RDONLY);
-	}
-	*outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (*outfile == -1)
-		perror("Pipex: Error opening outfile");
-	return (0);
-}
 
 void	child_process(int *fd, char **argv, char **envp)
 {
@@ -50,7 +36,10 @@ void	parent_process(int *fd, char **argv, char **envp)
 
 	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (outfile == -1)
+	{
 		perror("Pipex: Error opening outfile");
+		exit(0);
+	}
 	dup2(fd[0], 0);
 	close(fd[1]);
 	close(fd[0]);
@@ -85,7 +74,10 @@ int	main(int argc, char **argv, char **envp)
 	int		fd[2];
 
 	if (argc != 5)
-		perror("Pipex: infile command command outfile");
+	{
+		write(1, "Pipex: infile command command outfile", 37);
+		exit(1);
+	}
 	if (pipe(fd) == -1)
 		perror("Pipex: Pipe error");
 	create_processes(fd, argv, envp);
