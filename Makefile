@@ -29,7 +29,7 @@ $(NAME): $(OBJ) libft/libft.a
 	@$(CC) $(FLAGS) $(OBJ) libft/libft.a -o $(NAME)
 
 %.o: %.c
-	$(CC) $(FLAGS) -c $< -o $@
+	@$(CC) $(FLAGS) -c $< -o $@
 
 clean: 
 	@$(RM) $(OBJ)
